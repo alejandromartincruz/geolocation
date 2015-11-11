@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+	<title>Geolocation learning</title>
+
+	<script src="http://code.jquery.com/jquery-latest.min.js"
+        type="text/javascript"></script>
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
+
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" integrity="sha384-aUGj/X2zp5rLCbBxumKTCw2Z50WgIr1vs/PFN4praOTvYXWlVyh2UtNUU0KAUhAX" crossorigin="anonymous">
+
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" integrity="sha512-K1qjQ+NcF2TYO/eI3M6v8EiNYZfA95pQumfvcVrTHtwQVDG+aHRqLi/ETn2uB+1JqwYqVG3LIvdm9lj6imS/pQ==" crossorigin="anonymous"></script>
+	<style>
+      html, body {
+        height: 100%;
+        margin: 50px;
+        padding: 0;
+      }
+
+      .container{
+      	height: 100%;
+      }
+
+      .panel {
+      	height: 120%;
+      	border-radius: 20px;
+      }
+
+      #map {
+        height: 40%;
+        border-radius: 15px;
+        margin-left: 20px;
+        margin-right: 20px;
+        margin-bottom: 100px;
+      }
+    </style>
+
+</head>
+<body style="background-color:whitesmoke">
+
+<div id="main" class="container" style="margin:50px">
+	<div id="panel" class="panel">
+		<button class="btn btn-primary" id="watch-position" style="margin:20px">Watch position</button>
+		<button class="btn btn-primary" id="stop-watching" style="margin:20px">Stop watching</button>
+
+		<hr>
+		<center>
+			 <img src="http://themadjewess.net/wp-content/uploads/2015/05/cute-cat-kitten-skiing-animated-gif-picture.gif" alt="">
+		</center>
+		<hr>
+		<div id="map"></div>
+</div>
+
+	<script type="text/javascript" defer>
+		'use strict'
+		var myKey = "AIzaSyCjWs8h-6_5cCNsyTKC0H0x85NZ2ZjSq9U";
+		var geo;
+		var watchId;
+
+		if (navigator.geolocation) {
+			console.log("geolocation available");
+			geo = navigator.geolocation;
+
+			$('.get-position').show();
+
+			var options = {};
+			watchId = geo.watchPosition(onLocation, onError, options);
+			console.log("getting your position...")
+			geo.clearWatch(watchId);
+
+		} else {
+			console.log("geolocation is not available")
+		}
+
+		function onLocation(position){
+			var c = position.coords;
+			console.log(" You are in latitude: " + c.latitude + ", longitude: " + c.longitude);
+			var srcMap = 'https://maps.googleapis.com/maps/api/staticmap?center=S%7C' + c.latitude + ',' + c.longitude + '&zoom=16&size=600x300&maptype=roadmap&markers=color:red%7Clabel:S%7C' + c.latitude + ',' + c.longitude + '&key=AIzaSyCjWs8h-6_5cCNsyTKC0H0x85NZ2ZjSq9U';
+			$('img').attr("src", srcMap);
+			initMap(c.latitude, c.longitude);
+		}
+
+		function onError(error){
+			console.log("Error getting position: " + error)
+		}
+
+		$('#watch-position').click(function(){
+			var options = {};
+			watchId = geo.watchPosition(onLocation, onError, options);
+			$(this).hide();
+			$('#stop-watching').show();
+			console.log("Watching position....")
+		})
+
+		$('#stop-watching').click(function(){
+			geo.clearWatch(watchId);
+			console.log("Stopped spying on you");
+			$(this).hide();
+			$('#watch-position').show();
+		})
+
+		function initMap(latitude, longitude) {
+		  var myLatLng = {lat: latitude, lng: longitude};
+
+		  var map = new google.maps.Map(document.getElementById('map'), {
+		    zoom: 14,
+		    center: myLatLng
+		  });
+
+		  var marker = new google.maps.Marker({
+		    position: myLatLng,
+		    map: map,
+		    title: 'Hello Ironhack!'
+		  });
+		  
+		}
+
+	</script>
+
+	<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCjWs8h-6_5cCNsyTKC0H0x85NZ2ZjSq9U&signed_in=true&callback=initMap"></script>
+	
+</body>
+</html>
